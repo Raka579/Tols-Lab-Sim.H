@@ -1,0 +1,1611 @@
+<!--
+© 2026 raka579 & S²D Coding
+Project: Tools Lab (Educational / Simulated)
+GitHub: https://github.com/raka579
+License: Personal / Educational use only
+--> 
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tools Lab — Simulated Hacker Tools</title>
+<meta name="description" content="Simulasi alat keamanan siber untuk edukasi.">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://raka579.github.io/Tols-Lab-Sim.H/">
+<meta property="og:title" content="Tools Lab — Simulated Hacker Tools">
+<meta property="og:description" content="Simulasi cybersecurity dengan UI modern.">
+<meta property="og:image" content="https://raka579.github.io/Tols-Lab-Sim.H/Icon.png">
+
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://raka579.github.io/Tols-Lab-Sim.H/">
+<meta property="twitter:title" content="Tools Lab — Simulated Hacker Tools">
+<meta property="twitter:description" content="Simulasi cybersecurity dengan UI modern.">
+<meta property="twitter:image" content="https://raka579.github.io/Tols-Lab-Sim.H/Icon.png">
+
+<link rel="icon" type="image/png" href="Icon.jpeg">
+
+  <style>
+    :root{
+      --bg:#05060b; --panel:#0b1220; --accent:#06b6d4; --muted:#9fb0c9; --green:#7CFFB2;
+    }
+    *{box-sizing:border-box}
+    body{
+      -webkit-tap-highlight-color: transparent;
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial, "Courier New", monospace;
+      background:linear-gradient(180deg,#020617 0%, #071028 100%);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* SPLASH */
+    .splash{
+      position:fixed; 
+      inset:0;
+       display:flex; 
+       flex-direction:column;
+        gap:12px;
+      align-items:center; 
+      justify-content:center; 
+      z-index:90;
+      background:radial-gradient(ellipse at center, rgba(6,182,212,0.04), transparent 40%), rgba(0,0,0,0.6);
+      backdrop-filter: blur(3px);
+      transition:opacity .45s ease, transform .45s ease;
+      cursor:pointer;
+    }
+    .splash.fade{opacity:0; transform:scale(.999); pointer-events:none}
+    #splashName{font-weight:900; font-size:clamp(28px,6.5vw,84px); letter-spacing:1px; text-align:center}
+    #splashSub{color:var(--muted); font-size:13px; text-align:center}
+    #loadText{margin-top:8px; font-family: 'Courier New', monospace; color:var(--green); min-height:72px; text-align:center}
+.boot-mode {
+  width: 100vw !important;
+  height: 100vh !important;
+  position: absolute !important;
+  inset: 0;
+  text-align: left !important;
+  padding: 24px !important;
+  background: #000;
+  color: #00ff55;
+  font-family: monospace;
+  letter-spacing: 0.8px;
+}
+
+@keyframes bootFlicker {
+  0% { opacity: 1; }
+  100% { opacity: 0.94; }
+}
+    /* LAYOUT */
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px; position:relative; z-index:10; opacity:0; transform:translateY(-10px)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:700}
+    .brand h1{margin:0;font-size:18px}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+.status-row {
+  position: fixed;  
+  display: flex;
+  justify-content: flex-start;
+  font-size: 13px;
+  gap:5px;
+  color: var(--muted);
+  z-index: 999;
+}
+
+    main{padding:18px 28px;display:grid;grid-template-columns:1fr 380px;gap:18px; opacity:0; transform:translateY(8px)}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border-radius:12px; padding:14px; box-shadow:0 8px 24px rgba(2,6,23,0.6);
+      border:1px solid rgba(255,255,255,0.03);
+      min-height:120px;
+    }
+    .card .loader{ font-family:'Courier New', monospace; color:var(--green); text-align:center; padding:10px 0 }
+    .card .content{ display:none; }
+
+    .terminal{height:280px;overflow:auto;padding:12px;background:linear-gradient(180deg,#020612,#021126);font-family:monospace;font-size:13px;border-radius:10px}
+    .tools-list{display:flex;flex-direction:column;gap:8px}
+    .tool-btn{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);cursor:pointer;border:1px solid rgba(255,255,255,0.02)}
+    .input-row{display:flex;gap:8px;margin-top:10px}
+    input,button,select{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+
+    footer{padding:18px 28px;color:var(--muted);font-size:13px;opacity:0; transform:translateY(6px)}
+
+    /* reveals & stagger */
+    .reveal{animation:reveal .6s forwards}
+    @keyframes reveal{to{opacity:1;transform:none}}
+    .stagger-hidden{opacity:0; transform:translateY(10px)}
+
+    /* small helpers */
+    .badge{font-size:11px;padding:6px;border-radius:999px;background:rgba(255,255,255,0.03);display:inline-block}
+    .danger{color:#ffb4b4}
+    @media (max-width:900px){
+      main{grid-template-columns:1fr;}.grid{grid-template-columns:1fr}
+      .brand h1{font-size:16px}
+    }
+    /* opsional */
+#base64ResultBox textarea { font-family: monospace; font-size:13px; }
+ #trafficCard button, #trafficCard select {
+    padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit;cursor:pointer;
+  }
+  #loadText {
+  animation: flicker 0.15s infinite alternate;
+}
+/* Efek glitch untuk teks judul */
+@keyframes textGlitch {
+  0% { text-shadow: 2px 0 red, -2px 0 cyan; transform: none; }
+  10% { text-shadow: -2px 0 red, 2px 0 cyan; transform: skewX(5deg); }
+  20% { text-shadow: 3px 0 blue, -3px 0 lime; transform: translateX(2px); }
+  30% { text-shadow: -3px 0 magenta, 3px 0 yellow; transform: translateX(-2px); }
+  40% { text-shadow: 4px 0 red, -4px 0 cyan; }
+  50% { text-shadow: -4px 0 red, 4px 0 cyan; }
+  60% { text-shadow: 3px 0 blue, -3px 0 lime; transform: skewX(-5deg); }
+  80% { text-shadow: 0px 0 red, 0px 0 cyan; }
+  100% { opacity: 0; transform: scale(0.97); text-shadow: none; }
+}
+
+.glitch-out {
+  animation: textGlitch 0.6s steps(8) forwards;
+}
+@keyframes heavyGlitch {
+  0% {
+    opacity: 1;
+    transform: none;
+    text-shadow:
+      2px 0 red,
+      -2px 0 cyan;
+  }
+  10% {
+    clip-path: inset(10% 0 40% 0);
+    transform: translate(-2px, 2px) skewX(10deg);
+  }
+  20% {
+    clip-path: inset(60% 0 5% 0);
+    transform: translate(3px, -3px) skewX(-15deg);
+    text-shadow:
+      4px 0 red,
+      -4px 0 cyan,
+      1px 1px lime;
+  }
+  30% {
+    clip-path: inset(20% 0 60% 0);
+    transform: translate(-5px, 2px) skewX(8deg);
+  }
+  40% {
+    clip-path: inset(0 0 30% 0);
+    transform: translate(4px, -3px);
+  }
+  50% {
+    clip-path: inset(70% 0 0 0);
+    transform: translate(-3px, 3px);
+  }
+  60% {
+    clip-path: inset(15% 0 55% 0);
+    transform: translate(6px, -6px) scale(1.02);
+    text-shadow:
+      5px 0 magenta,
+      -5px 0 cyan;
+  }
+  80% {
+    clip-path: inset(0);
+    opacity: 0.8;
+    transform: skewX(-5deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+    text-shadow: none;
+    clip-path: inset(0);
+  }
+}
+
+.glitch-heavy {
+  animation: heavyGlitch 0.7s steps(10) forwards;
+}
+  </style>
+</head>
+<body>
+
+  <!-- Splash with typewriter loading -->
+  <div class="splash" id="splash">
+  <div id="splashName" class="fade-in-title">TOOLS LAB — @$ssdc</div>
+  <div id="splashSub">Klik untuk memulai • Simulated / Educational</div>
+<div id="glitchOverlay"></div>
+
+  <!-- Tambahkan div baru untuk area loading -->
+  <div id="loadingPage" style="display:none; text-align:center;">
+    <div id="loadText"></div>
+  </div>
+</div>
+
+  <!-- Header -->
+  <header id="hdr">
+    <div class="brand">
+      <div class="logo" id="logoTxt">TL</div>
+      <div>
+        <h1 id="brandTitle" style="margin-top:-20px;">Tools Lab — @$ssdc</h1> 
+          <div class="status-row" aria-live="polite">
+             
+        <div id="clock">--:--:-- |</div>
+      <div id="cpuBox">Cores: -- | CPU: --% |</div>
+      <div id="batteryBox">Battery: --%</div>
+    </div>
+      </div>
+    </div>
+
+  
+  
+  </header>
+
+  <!-- Main -->
+  <main id="main">
+    <section>
+      <div class="grid" id="grid">
+
+<div class="card stagger-hidden" id="pktCard">
+         <div class="loader">Memuat packet viewer...</div>
+          <div class="content">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+  
+    <strong style="color:#11ff00">Packet Viewer (Simulated)</strong>
+  
+  </div> <br>
+
+  <p class="muted" style="margin:8px 0">Membuat aliran paket palsu untuk analisis (protocol, src, dst, len).</p>
+
+  <div class="flex" style="margin-bottom:8px">
+    <button id="pktStart">Start Stream</button>
+    <button id="pktStop">Stop</button>
+    <button id="pktSpike">Inject Anomaly</button>
+    <button id="pktClear">Clear</button>
+    <!-- Export akan ditambahkan otomatis oleh script jika belum ada -->
+  </div>
+
+  <!-- OUTPUT: gunakan <pre> agar formatting monospaced mirip log/pcap -->
+  <pre id="pktOut" style="height:220px; overflow:auto; background:#021026; padding:10px; border-radius:8px;color:#15ff23;">
+[packet stream simulated]
+  </pre>
+</div>
+        <!-- Card 4: Terminal -->
+        <div class="card stagger-hidden" data-delay="480">
+          <div class="loader">Memuat modul terminal...</div>
+          <div class="content">
+            <h3 style="color:#fff100">Terminal (Simulated)</h3>
+            <p>Perintah palsu: help, ping, echo, clear.</p>
+            <div style="margin-top:8px">
+              <div class="terminal" id="fakeTerminal">Welcome to Tools Lab (simulated). Type <strong>help</strong>.</div>
+              <div style="margin-top:8px;display:flex;gap:8px">
+                <input id="termInput" placeholder="ketik perintah..." />
+                <button id="termRun">Kirim</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px" class="card stagger-hidden" data-delay="600">
+        <div class="loader">Memuat disclaimer...</div>
+        <div class="content">
+          <h3 style="color:#ff0034">Disclaimer</h3>
+          <p class="danger">Semua fitur murni simulasi/educational. Jangan gunakan untuk merugikan orang lain. Kode ini hanya front-end.</p>
+        </div><br><br>
+          <!-- Card 2: Hash Generator -->
+        <div class="card stagger-hidden" data-delay="240">
+          <div class="loader">Memuat modul hash...</div>
+          <div class="content">
+            <h3 style="color:#f8ff00">Hash Generator</h3>
+            <p>Buat SHA-256 dari teks (di-browser).</p>
+            <div style="margin-top:8px">
+              <input id="hashInput" placeholder="masukkan teks..." />
+              <div style="margin-top:8px;display:flex;gap:8px">
+                <button id="genHash">Buat Hash</button>
+                <button id="clearHash">Bersihkan</button>
+              </div>
+              <div style="margin-top:10px;font-family:monospace;font-size:13px;color:#cfe9ff" id="hashResult">--</div>
+            </div>
+          </div>
+        </div><br><br>
+
+        <!-- Card 3: Password Strength -->
+        <div class="card stagger-hidden" data-delay="360">
+          <div class="loader">Memuat modul password check...</div>
+          <div class="content">
+            <h3 style="color:#00eaff">Password Strength</h3>
+            <p>Periksa kekuatan kata sandi (client-side).</p>
+            <div class="input-row">
+              <input id="pwdInput" placeholder="masukkan password" />
+              <button id="chkPwd">Cek</button>
+            </div>
+            <div style="margin-top:10px" id="pwdResult">--</div>
+          </div>
+        </div><br><br>
+            <div class="card stagger-hidden" data-delay="720">
+        <div class="loader">Memuat quick tools...</div>
+        <div class="content">
+          <h3 style="color:#00eaff">Quick Tools</h3>
+          <div class="tools-list" style="margin-top:8px">
+            <div class="tool-btn" data-tool="qr"><div style="font-weight:700">QR</div><small>Generate QR (placeholder)</small></div>
+            <div class="tool-btn" data-tool="jsonfmt"><div style="font-weight:700">JSON</div><small>Formatter</small></div>
+            <div class="tool-btn" data-tool="encode"><div style="font-weight:700">Base64</div><small>Encode / Decode</small></div>
+            <!-- Base64 result panel (letakkan di sidebar/aside atau body) -->
+<div id="base64ResultBox" style="display:none; position:fixed; right:50px; bottom:20px; background:#071028; border:1px solid #0f6; color:#cfe9ff; padding:12px; border-radius:8px; z-index:9999; width:320px; box-shadow:0 8px 30px rgba(0,0,0,0.6); font-family:monospace;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+    <strong style="color:#7cffc4">Base64</strong>
+    <button id="closeBase64" style="background:transparent;border:1px solid rgba(127,255,194,0.12);color:#7cffc4;padding:4px 8px;border-radius:6px;cursor:pointer">✕</button>
+  </div>
+  <div id="base64Mode" style="font-size:12px;color:var(--muted);margin-bottom:6px">—</div>
+  <textarea id="base64Result" style="width:100%;height:90px;background:#000;border:1px solid rgba(127,255,194,0.08);color:#cfe9ff;padding:8px;border-radius:6px;resize:vertical;"></textarea>
+  <div style="display:flex;gap:8px;margin-top:8px;">
+    <button id="copyBase64" style="flex:1;padding:8px;border-radius:6px;background:#0f6;color:#011;cursor:pointer;border:none">Copy</button>
+    <button id="downloadBase64" style="flex:1;padding:8px;border-radius:6px;background:transparent;border:1px solid rgba(127,255,194,0.12);color:#7cffc4;cursor:pointer">Download</button>
+  </div>
+</div>
+          </div>
+        </div>
+      </div>
+      </div>
+      
+    </section>
+    
+    <aside class="right">
+          <div class="card" id="trafficCard" style="min-height:260px;">
+               <div class="loader">Memuat Traffic graph...</div>
+          <div class="content">
+  <h3 style="color:#00eaff">Traffic Graph (Simulated)</h3>
+  <p style="margin-top:6px;color:#9fb0c9;font-size:13px">Grafik bandwidth simulasi (download/upload)</p>
+
+  <div style="display:flex;gap:8px;align-items:center;margin:8px 0 12px 0">
+    <button id="tgPauseBtn">Pause</button>
+    <button id="tgResetBtn">Reset</button>
+    <button id="tgSpikeBtn">Generate spike</button>
+    <select id="tgWindow" title="Window" style="margin-left:auto">
+      <option value="30">30s</option>
+      <option value="60" selected>60s</option>
+      <option value="300">5min</option>
+    </select>
+    <button id="tgDownload" title="Download PNG">Download PNG</button>
+  </div>
+
+  <div style="position:relative;">
+    <canvas id="trafficCanvas" style="width:100%;height:220px;display:block;background:linear-gradient(180deg, rgba(7,16,32,0.6), rgba(2,6,23,0.9));border-radius:8px;"></canvas>
+    <!-- tooltip -->
+    <div id="tgTooltip" style="position:absolute;pointer-events:none;padding:6px 8px;background:rgba(0,0,0,0.75);color:#cfe9ff;border-radius:6px;font-family:monospace;font-size:12px;display:none;z-index:5;"></div>
+  </div>
+</div><br><br>
+
+           <!-- Card 1: Port Scanner (simulated) -->
+        <div class="card stagger-hidden" data-delay="120">
+          <div class="loader">Memuat modul port scanner...</div>
+          <div class="content">
+            <h3 style="color:#fff100">Port Scanner (Simulated)</h3>
+            <p>Masukkan IP/host untuk demo. Hasil simulasi hanya untuk belajar.</p>
+            <div class="input-row">
+              <input id="scanHost" placeholder="contoh: 192.168.1.1 atau example.com" />
+              <button id="runScan">Jalankan</button>
+            </div>
+            <div class="terminal" id="scanOutput">[scan output akan muncul di sini]</div>
+          </div>
+        </div>
+  
+
+   
+        </div>
+      </div>
+    </aside>
+  </main>
+<footer id="ftr">
+  Tools Lab • Educational Simulation<br>
+ © 2026 raka579 & S²D Coding (S²D / @$ssdc)
+</footer>
+<!-- Library QRCodeJS -->
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+
+    
+/* Packet Viewer (Simulated) — cocok diletakkan setelah Traffic Graph script
+   Features: Start/Stop/Spike/Clear, ALERT highlight, Export (.txt), safe DOM checks.
+*/
+(function(){
+  // wait until DOM ready to be safe if this is included in head
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else init();
+
+  function init(){
+    const pktOut = document.getElementById('pktOut');
+    const startBtn = document.getElementById('pktStart');
+    const stopBtn = document.getElementById('pktStop');
+    const spikeBtn = document.getElementById('pktSpike');
+    const clearBtn = document.getElementById('pktClear');
+
+    // if any required element missing, bail silently
+    if(!pktOut || !startBtn || !stopBtn || !spikeBtn || !clearBtn){
+      console.warn('Packet Viewer: required elements not found. Skipping initialization.');
+      return;
+    }
+
+    let pktTimer = null;
+    let streamRunning = false;
+
+    // utility
+    const protoList = ['TCP','UDP','ICMP','HTTP','TLS','DNS'];
+    function randChoice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+    function randIP(prefix){
+      if(!prefix) return `${Math.floor(Math.random()*240)+8}.${Math.floor(Math.random()*256)}.${Math.floor(Math.random()*256)}.${Math.floor(Math.random()*256)}`;
+      return `${prefix}.${Math.floor(Math.random()*256)}`;
+    }
+    function appendLine(line, kind='info'){
+      // add simple markup: ALERT lines flagged; we keep pktOut as <pre>, so include markers for styling
+      const now = new Date().toLocaleTimeString();
+      const outLine = `[${now}] ${line}\n`;
+      pktOut.textContent += outLine;
+      pktOut.scrollTop = pktOut.scrollHeight;
+    }
+
+    function startStream(){
+      if(pktTimer) return;
+      streamRunning = true;
+      pktOut.textContent += '[Simulated packet stream started]\n';
+      pktTimer = setInterval(()=>{
+        const proto = randChoice(protoList);
+        const s = `192.168.${Math.floor(Math.random()*200)}.${Math.floor(Math.random()*255)}`;
+        const d = `10.0.${Math.floor(Math.random()*200)}.${Math.floor(Math.random()*255)}`;
+        const len = Math.floor(Math.random()*1400)+40;
+        appendLine(`${proto} ${s} → ${d} len=${len}`);
+      }, 300);
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+    }
+
+    function stopStream(){
+      if(pktTimer){ clearInterval(pktTimer); pktTimer = null; streamRunning = false; pktOut.textContent += '[Stream paused]\n'; }
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    }
+
+    function clearStream(){
+      pktOut.textContent = '[packet stream cleared]\n';
+    }
+
+    function injectSpike(){
+      // a quick burst of ALERT messages to simulate anomaly
+      for(let i=0;i<12;i++){
+        setTimeout(()=>{
+          const src = `203.0.113.${Math.floor(Math.random()*200)}`;
+          const dst = `10.0.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`;
+          const line = `ALERT TCP ${src} → ${dst} len=65535 (suspicious)`;
+          appendLine(line);
+        }, i*100);
+      }
+    }
+
+    // export function: save current pre text as .txt
+    function exportPackets(){
+      const text = pktOut.textContent || '[empty]';
+      const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'simulated_packets.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    }
+
+    // wire up buttons (defensive)
+    startBtn.addEventListener('click', startStream);
+    stopBtn.addEventListener('click', stopStream);
+    clearBtn.addEventListener('click', clearStream);
+    spikeBtn.addEventListener('click', injectSpike);
+
+    // add export button dynamically (if not present)
+    if(!document.getElementById('pktExport')){
+      const btn = document.createElement('button');
+      btn.id = 'pktExport';
+      btn.textContent = 'Export';
+      btn.style.marginLeft = '8px';
+      // try to insert after existing control buttons
+      const parent = startBtn.parentElement;
+      if(parent) parent.appendChild(btn);
+      btn.addEventListener('click', exportPackets);
+    } else {
+      document.getElementById('pktExport').addEventListener('click', exportPackets);
+    }
+
+    // initialize controls state
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+  }
+})();
+
+    
+/* -------------------------
+   Helpers & App init
+   ------------------------- */
+function stripHtml(html){
+  const tmp = document.createElement('div'); tmp.innerHTML = html; return tmp.textContent || tmp.innerText || '';
+}
+function setAppName(htmlName){
+  const splashName = document.getElementById('splashName');
+  const brandTitle = document.getElementById('brandTitle');
+  const logo = document.getElementById('logoTxt');
+  splashName.innerHTML = htmlName;
+  localStorage.setItem('toolslab_name', htmlName);
+  const plain = stripHtml(htmlName) || 'Tools Lab — Simulated';
+  if(brandTitle) brandTitle.textContent = plain;
+  if(logo) logo.textContent = (plain.split(' ')[0]||'TL').slice(0,2).toUpperCase();
+  document.title = plain + ' — Simulated';
+}
+const savedName = localStorage.getItem('toolslab_name');
+if(savedName) setAppName(savedName);
+
+/* -------------------------
+   Splash: typewriter loading
+   ------------------------- */
+const splash = document.getElementById('splash');
+const splashName = document.getElementById('splashName');
+const splashSub = document.getElementById('splashSub');
+const loadingPage = document.getElementById('loadingPage');
+const loadText = document.getElementById('loadText');
+
+const loadingPhases = [
+  [
+    'Menginisialisasi sistem...',
+    'Memuat modul keamanan...',
+    'Memuat UI...',
+    'Mempersiapkan dependencies...',
+    'Selesai ✔'
+  ],
+  [
+    'Memeriksa integritas file...',
+    'Menyiapkan layanan jaringan...',
+    'Mengecek konfigurasi...',
+    'Memverifikasi sumber daya...',
+    'Validasi selesai ✔'
+  ],
+   [
+  '......::::::......',
+  '....:@@@@@@@@:....',
+  '...:@#::::::#@:...',
+  '..:@:..::::..:@:..',
+  '..:@:::#@@#:::@:..',
+  '..:@::::::::::@:..',
+  '...:@::::::::@:...',
+  '....:@@@@@@@@:....',
+  '......::::::......'
+], 
+  // fase acak “kode sistem”
+  Array.from({ length: 8 }, () => {
+    const random = Math.random().toString(36).slice(2, 12).toUpperCase();
+    return `[SYS] ${random} > EXEC...`;
+  }),
+  [
+    'Mengaktifkan subsistem utama...',
+    'Mengoptimalkan kinerja...',
+    'Membersihkan cache...',
+    'Menjalankan instance UI...',
+    'Sistem Siap ✔'
+  ]
+];
+
+async function showLoadingSequence() {
+  splashName.classList.add('glitch-heavy');
+  await new Promise(r => setTimeout(r, 700));
+
+  splashName.style.display = 'none';
+  splashSub.style.display = 'none';
+  loadingPage.style.display = 'block';
+  loadText.innerHTML = '';
+
+  const container = document.createElement('div');
+  container.style.fontFamily = 'monospace';
+  container.style.fontSize = '18px';
+  container.style.color = '#0ff';
+  container.style.letterSpacing = '0.5px';
+  container.style.lineHeight = '1.6';
+  container.style.transition = 'opacity 0.4s ease';
+  loadText.appendChild(container);
+
+  // 🔹 Jalankan semua fase
+  for (let phaseIndex = 0; phaseIndex < loadingPhases.length; phaseIndex++) {
+    const phase = loadingPhases[phaseIndex];
+
+    for (const line of phase) {
+      const p = document.createElement('div');
+      p.style.opacity = 0;
+      container.appendChild(p);
+      await typeLine(line, p, 20);
+      p.style.transition = 'opacity 0.3s ease';
+      p.style.opacity = 1;
+      await new Promise(r => setTimeout(r, 3));
+    }
+
+    // Setelah fase selesai → fade out
+    await new Promise(r => setTimeout(r, 90));
+    container.style.opacity = 0;
+    await new Promise(r => setTimeout(r, 400));
+    container.innerHTML = '';
+    container.style.opacity = 1;
+  }
+
+  // lanjut ke boot screen
+  await new Promise(r => setTimeout(r, 40));
+  showFakeBoot();
+}
+
+/* Efek ketik + scramble */
+function typeLine(line, el, speed = 5) {
+  return new Promise(resolve => {
+    let i = 0;
+    const chars = '!@#$%^&*()_+-=ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+    const t = setInterval(() => {
+      const partial = line.slice(0, i);
+      const scramble = Array.from({ length: line.length - i })
+        .map(() => chars[Math.floor(Math.random() * chars.length)])
+        .join('');
+      el.textContent = partial + scramble;
+      i++;
+      if (i > line.length) {
+        clearInterval(t);
+        el.textContent = line;
+        resolve();
+      }
+    }, speed);
+  });
+}
+
+
+/* 🔹 Efek kode acak penuh layar */
+function showFakeBoot() {
+  // Kosongin dan ubah gaya
+  loadText.innerHTML = '';
+  loadText.classList.add('boot-mode');
+
+  // Gaya paksa full layar
+  loadText.style.position = 'absolute';
+  loadText.style.top = '0';
+  loadText.style.left = '0';
+  loadText.style.width = '100vw';
+  loadText.style.height = '100vh';
+  loadText.style.padding = '24px';
+  loadText.style.background = 'radial-gradient(circle at center, #001400 0%, #000 100%)';
+  loadText.style.fontFamily = 'monospace';
+  loadText.style.color = '#00ff55';
+  loadText.style.fontSize = '15px';
+  loadText.style.lineHeight = '1.25';
+  loadText.style.whiteSpace = 'pre';
+  loadText.style.overflow = 'hidden';
+  loadText.style.textAlign = 'left';
+  loadText.style.letterSpacing = '1px';
+  loadText.style.zIndex = '9999';
+  loadText.style.animation = 'bootFlicker 0.2s infinite alternate';
+
+  let lines = 0;
+  const maxLines = 120;
+
+  const iv = setInterval(() => {
+    const time = new Date().toLocaleTimeString();
+    const mod = Math.random() > 0.5 ? 'SYS' : 'KRN';
+    const msg = Math.random().toString(36).slice(2, 10);
+    const status =
+      Math.random() > 0.08
+        ? `<span style="color:#0f0">[ OK ]</span>`
+        : `<span style="color:#f33">[ FAIL ]</span>`;
+    loadText.innerHTML += `[${time}] ${mod}: init ${msg}... ${status}<br>`;
+    lines++;
+    loadText.scrollTop = loadText.scrollHeight;
+
+    if (lines > maxLines) {
+clearInterval(iv);
+setTimeout(() => {
+loadText.style.animation = 'none';
+splash.classList.add('fade');
+setTimeout(() => {
+splash.style.display = 'none';
+
+revealUI();
+}, 650);
+}, 1000);
+}
+}, 35);
+}
+
+
+
+
+
+
+/* 🔸 Klik splash untuk mulai loading */
+splash.addEventListener('click', function onceStart(){
+  splash.removeEventListener('click', onceStart);
+  loadText.innerHTML = '';
+  showLoadingSequence();
+});
+/* double-click splash name to edit (allow small HTML) */
+document.getElementById('splashName').addEventListener('dblclick', ()=>{
+  const splashNameEl = document.getElementById('splashName');
+  const fullText = splashNameEl.textContent;
+  
+  // Pisahkan bagian sebelum dan sesudah tanda air
+  const ownerTag = '@$ssdc';
+  const [beforeTag] = fullText.split(ownerTag);
+  
+  const newName = prompt('Edit nama tampilan (tanda air tidak bisa diubah):', beforeTag.trim());
+  if(newName !== null) {
+    // Hindari HTML injection juga
+    const safeName = newName.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    setAppName(`${safeName} — ${ownerTag}`);
+  }
+});
+
+/* -------------------------
+   Reveal UI with per-element loaders
+   ------------------------- */
+function revealUI(){
+
+  document.querySelectorAll('.card').forEach((el, i)=>{
+    initCardLoader(el);
+    setTimeout(()=>{
+      el.style.opacity = 1;
+      el.style.transform = 'none';
+    }, 200 + i * 150);
+  });
+
+  document.querySelector('header').style.opacity = 1;
+  document.querySelector('main').style.opacity = 1;
+  document.querySelector('footer').style.opacity = 1;
+
+  /* 🔹 Status row loading animation */
+  const clockEl = document.getElementById('clock');
+  const cpuBox = document.getElementById('cpuBox');
+  const batteryBox = document.getElementById('batteryBox');
+  if (!clockEl || !cpuBox || !batteryBox) return;
+
+  // ❗ Hentikan sementara update otomatis biar gak tampil dulu
+  clockEl.textContent = '';
+  cpuBox.textContent = '';
+  batteryBox.textContent = '';
+
+  const placeholders = [
+    { el: clockEl, base: 'Clock' },
+    { el: cpuBox, base: 'CPU info' },
+    { el: batteryBox, base: 'Battery' }
+  ];
+
+  let dots = 0;
+  const ivLoad = setInterval(()=>{
+    dots = (dots + 1) % 4;
+    placeholders.forEach(p=>{
+      p.el.textContent = `${p.base}${'.'.repeat(dots)}`;
+    });
+  }, 400);
+
+  // 🔸 Setelah animasi selesai, aktifkan data asli
+  setTimeout(()=>{
+    clearInterval(ivLoad);
+
+    // Tampilkan data nyata
+    updateClock();
+    updateCpuSim();
+
+    if (navigator.getBattery) {
+      navigator.getBattery().then(bat => {
+        const pct = Math.round(bat.level * 100);
+        const ch = bat.charging ? '⚡' : '';
+        batteryBox.textContent = `Battery: ${pct}% ${ch}`;
+      }).catch(()=> batteryBox.textContent = 'Battery: n/a');
+    } else {
+      batteryBox.textContent = 'Battery: unsupported';
+    }
+
+  }, 2500);
+}
+
+function initCardLoader(card){
+  const loader = card.querySelector('.loader');
+  const content = card.querySelector('.content');
+  if(!loader || !content) return;
+
+  // tampilkan loader dulu
+  loader.style.display = 'block';
+  loader.style.opacity = 1;
+  content.style.display = 'none';
+  content.style.opacity = 0;
+
+  let base = loader.textContent || 'Memuat...';
+  let dots = 0;
+  const iv = setInterval(()=>{
+    dots = (dots + 1) % 4;
+    loader.textContent = base + '.'.repeat(dots);
+  }, 2000);
+
+  const loadTime = 900 + Math.round(Math.random() * 1200);
+  setTimeout(()=>{
+    clearInterval(iv);
+    loader.style.opacity = 0;
+    loader.style.transition = 'opacity 0.3s ease';
+    setTimeout(()=>{
+      loader.style.display = 'none';
+      content.style.display = 'block'; // ini fix utama
+      content.style.opacity = 0;
+      content.style.transform = 'translateY(10px)';
+      content.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      setTimeout(()=>{
+        content.style.opacity = 1;
+        content.style.transform = 'translateY(0)';
+      }, 50);
+    }, 2000);
+  }, loadTime);
+}
+
+/* -------------------------
+   Clock, Battery, CPU
+   ------------------------- */
+const clockEl = document.getElementById('clock');
+const cpuBox = document.getElementById('cpuBox');
+const batteryBox = document.getElementById('batteryBox');
+
+function updateClock(){
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+  clockEl.textContent = `${hh}:${mm}:${ss}`;
+}
+setInterval(updateClock,1000); updateClock();
+
+// CPU cores + simulated usage
+const cores = navigator.hardwareConcurrency || null;
+let simulatedCpu = 8;
+function updateCpuSim(){
+  const target = 8 + Math.random()*72;
+  simulatedCpu += (target - simulatedCpu) * 0.07;
+  const pct = Math.round(Math.max(2, Math.min(99, simulatedCpu)));
+  cpuBox.textContent = `Cores: ${cores || 'n/a'} | CPU: ${pct}%`;
+}
+setInterval(updateCpuSim, 800);
+updateCpuSim();
+
+// Battery API
+let batteryRef = null;
+if(navigator.getBattery){
+  navigator.getBattery().then(bat => {
+    batteryRef = bat;
+    function refreshBattery(){
+      const pct = Math.round(bat.level * 100);
+      const ch = bat.charging ? '⚡' : '';
+      batteryBox.textContent = `Battery: ${pct}% ${ch}`;
+    }
+    bat.addEventListener('levelchange', refreshBattery);
+    bat.addEventListener('chargingchange', refreshBattery);
+    refreshBattery();
+  }).catch(()=> batteryBox.textContent = 'Battery: n/a');
+} else {
+  batteryBox.textContent = 'Battery: unsupported';
+}
+
+/* -------------------------
+   Tools: Port scan, Hash, Pwd, Terminal, Quick Tools, Logging
+   ------------------------- */
+// simple logger
+const _log = [];
+function log(entry){ _log.push(new Date().toISOString() + ' ' + entry); }
+
+// Port scanner (simulated)
+document.getElementById('runScan').addEventListener('click', ()=>{
+  const host = document.getElementById('scanHost').value.trim() || 'example.com';
+  const out = document.getElementById('scanOutput');
+  out.textContent = `Scanning ${host} ... (simulated)\n`;
+  const ports = [22,80,443,8080,3306,21,25,53,110,995];
+  ports.forEach((p,i)=>{
+    setTimeout(()=>{
+      const open = Math.random() > 0.6;
+      out.textContent += `Port ${p}: ${open ? 'OPEN' : 'CLOSED'}\n`;
+      out.scrollTop = out.scrollHeight;
+    }, 400 + i*320);
+  });
+  log('scan ' + host);
+});
+
+// Hash generator (SHA-256 via Web Crypto)
+async function sha256(str){
+  const enc = new TextEncoder();
+  const data = enc.encode(str);
+  const h = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+document.getElementById('genHash').addEventListener('click', async ()=>{
+  const val = document.getElementById('hashInput').value;
+  if(!val) return alert('Masukkan teks dulu');
+  const h = await sha256(val);
+  document.getElementById('hashResult').textContent = h;
+  log('hash ' + val.slice(0,24));
+});
+document.getElementById('clearHash').addEventListener('click', ()=>{ document.getElementById('hashInput').value=''; document.getElementById('hashResult').textContent='--'; });
+
+// Password check
+document.getElementById('chkPwd').addEventListener('click', ()=>{
+  const pwd = document.getElementById('pwdInput').value;
+  const res = document.getElementById('pwdResult');
+  if(!pwd){ res.textContent='Masukkan password terlebih dahulu'; return; }
+  let score = 0;
+  if(pwd.length >= 8) score++;
+  if(/[A-Z]/.test(pwd)) score++;
+  if(/[0-9]/.test(pwd)) score++;
+  if(/[^A-Za-z0-9]/.test(pwd)) score++;
+  const labels = ['Very Weak','Weak','Okay','Strong','Very Strong'];
+  res.textContent = `${labels[score]} (skor ${score}/4)`;
+  log('pwd-check ' + pwd.slice(0,2) + '***');
+});
+
+// Fake terminal
+/***********************
+ Enhanced simulated terminal
+ Paste/replace the terminal handling part with this.
+ Works entirely client-side (no server).
+***********************/
+
+(function(){
+  const fakeTerminal = document.getElementById('fakeTerminal');
+  const termInput = document.getElementById('termInput');
+  const termRunBtn = document.getElementById('termRun');
+
+  if(!fakeTerminal || !termInput) return;
+
+  // State
+  const history = [];
+  let histIndex = -1;
+  const commands = ['help','ping','echo','clear','date','time','hash','base64','evaljs'];
+  const promptStr = '$';
+
+  // utils
+  function appendLine(text, cls){
+    const now = new Date();
+    const stamp = now.toLocaleTimeString();
+    fakeTerminal.textContent += `\n[${stamp}] ${text}`;
+    fakeTerminal.scrollTop = fakeTerminal.scrollHeight;
+  }
+  function clearTerminal(){ fakeTerminal.textContent = ''; }
+
+  // crypto helper (sha-256)
+  async function sha256hex(msg){
+    const enc = new TextEncoder().encode(msg);
+    const h = await crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+
+  // base64 helpers safe for unicode
+  function base64EncodeUnicode(str){ return btoa(unescape(encodeURIComponent(str))); }
+  function base64DecodeUnicode(str){ return decodeURIComponent(escape(atob(str))); }
+
+  // Command handler
+  async function handleCommand(raw){
+    const line = raw.trim();
+    if(!line) return;
+    history.unshift(line); // push to history
+    histIndex = -1;
+
+    appendLine('> ' + line);
+
+    const parts = line.split(' ');
+    const cmd = parts[0].toLowerCase();
+    const arg = parts.slice(1).join(' ');
+
+    switch(cmd){
+      case 'help':
+        appendLine('Available: ' + commands.join(', '));
+        appendLine('Examples: echo hello, hash hello, base64 encode|decode <text>, evaljs <code> (dangerous)');
+        break;
+      case 'ping':
+        appendLine('PONG (simulated)');
+        break;
+      case 'echo':
+        appendLine(arg);
+        break;
+      case 'clear':
+        clearTerminal();
+        break;
+      case 'date':
+        appendLine(new Date().toLocaleDateString());
+        break;
+      case 'time':
+        appendLine(new Date().toLocaleTimeString());
+        break;
+      case 'hash':
+        if(!arg){ appendLine('Usage: hash <text>'); break; }
+        appendLine('Computing SHA-256...');
+        try{
+          const h = await sha256hex(arg);
+          appendLine(h);
+        }catch(e){
+          appendLine('Hash failed: ' + e.message);
+        }
+        break;
+      case 'base64':
+        if(!arg){ appendLine('Usage: base64 encode|decode <text>'); break; }
+        const sub = parts[1];
+        const payload = parts.slice(2).join(' ');
+        if(sub === 'encode'){
+          try{ appendLine(base64EncodeUnicode(payload)); } catch(e){ appendLine('Encode failed'); }
+        } else if(sub === 'decode'){
+          try{ appendLine(base64DecodeUnicode(payload)); } catch(e){ appendLine('Decode failed (invalid base64)'); }
+        } else {
+          appendLine('Usage: base64 encode|decode <text>');
+        }
+        break;
+      case 'evaljs':
+        // WARN: eval is dangerous. Only for local testing.
+        try{
+          // run in try/catch and limit time is not possible here; this is powerful.
+          const res = eval(arg);
+          appendLine(String(res));
+        } catch(e){
+          appendLine('Eval error: ' + (e && e.message ? e.message : e));
+        }
+        break;
+      default:
+        appendLine('Unknown command: ' + cmd + ' — type help');
+    }
+  }
+
+  // Event wiring
+  termRunBtn?.addEventListener('click', ()=>{
+    handleCommand(termInput.value);
+    termInput.value = '';
+    termInput.focus();
+  });
+
+  termInput.addEventListener('keydown', (e)=>{
+    // Enter = run
+    if(e.key === 'Enter'){ e.preventDefault(); handleCommand(termInput.value); termInput.value=''; return; }
+
+    // Arrow up/down for history
+    if(e.key === 'ArrowUp' || e.key === 'ArrowDown'){
+      e.preventDefault();
+      if(history.length === 0) return;
+      if(e.key === 'ArrowUp'){ // older -> next in history array
+        histIndex = Math.min(history.length - 1, histIndex + 1);
+      } else {
+        histIndex = Math.max(-1, histIndex - 1);
+      }
+      termInput.value = (histIndex === -1) ? '' : history[histIndex];
+    }
+
+    // Tab completion
+    if(e.key === 'Tab'){
+      e.preventDefault();
+      const cur = termInput.value.trim();
+      const candidates = commands.filter(c => c.startsWith(cur));
+      if(candidates.length === 1){
+        termInput.value = candidates[0] + ' ';
+      } else if(candidates.length > 1){
+        appendLine('Completions: ' + candidates.join(', '));
+      }
+    }
+  });
+
+  // extra UI actions: copy / download terminal text (you can add buttons in HTML and wire them here)
+  window.copyTerminalToClipboard = async function(){
+    const text = fakeTerminal.textContent;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); document.body.removeChild(ta); return true; } catch { document.body.removeChild(ta); return false;}
+  };
+
+  window.downloadTerminalOutput = function(filename='terminal-output.txt'){
+    const blob = new Blob([fakeTerminal.textContent], {type:'text/plain;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+
+  // initial welcome
+  appendLine('Tools Lab Terminal — simulated. Type "help".');
+})();
+
+// safe Base64 helpers (support emoji / non-latin)
+function base64EncodeUnicode(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+function base64DecodeUnicode(str) {
+  return decodeURIComponent(escape(atob(str)));
+}
+
+// elements
+const base64Box = document.getElementById('base64ResultBox');
+const base64Area = document.getElementById('base64Result');
+const base64Mode = document.getElementById('base64Mode');
+const copyBtn = document.getElementById('copyBase64');
+const closeBtn = document.getElementById('closeBase64');
+const downloadBtn = document.getElementById('downloadBase64');
+
+// show/hide helpers
+function showBase64(mode, text){
+  base64Mode.textContent = mode;
+  base64Area.value = text;
+  base64Box.style.display = 'block';
+  base64Area.select();
+}
+function hideBase64(){ base64Box.style.display = 'none'; }
+
+// copy handler with fallback
+async function copyToClipboard(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch(e){ /* fallthrough to fallback */ }
+  }
+  // fallback: textarea + execCommand
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed'; ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); document.body.removeChild(ta); return true; }
+  catch(e){ document.body.removeChild(ta); return false; }
+}
+
+// download helper
+function downloadText(filename, text){
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(link.href);
+}
+
+// wire up quick tools handler: replace original QR/JSON/Base64 branch or extend it
+document.querySelectorAll('.tool-btn').forEach(btn=>{
+  btn.addEventListener('click', async ()=> {
+    const tool = btn.dataset.tool;
+    if(tool === 'encode'){ // Base64 tool (now UI-based)
+      const val = prompt('Masukkan teks untuk Encode atau Decode Base64:');
+      if(!val) return;
+
+      // detect base64-ish
+      const isBase64 = /^[A-Za-z0-9+/=\\s]+$/.test(val.trim());
+      if(isBase64){
+        try {
+          const dec = base64DecodeUnicode(val.trim());
+          showBase64('Decoded (detected Base64):', dec);
+        } catch(e){
+          // if decode fails, treat as text to encode
+          try {
+            const enc = base64EncodeUnicode(val);
+            showBase64('Encoded (fallback):', enc);
+          } catch(err){
+            alert('Gagal memproses input.');
+          }
+        }
+      } else {
+        try {
+          const enc = base64EncodeUnicode(val);
+          showBase64('Encoded:', enc);
+        } catch(e){
+          alert('Gagal encode teks.');
+        }
+      }
+    }
+
+    // existing handlers for jsonfmt / qr etc remain (just keep them)
+    if(tool === 'jsonfmt'){
+      const json = prompt('Paste JSON to format');
+      try{ const parsed = JSON.parse(json); showBase64('JSON formatted:', JSON.stringify(parsed, null, 2)); }
+      catch(e){ alert('Invalid JSON'); }
+    }
+
+    if (tool === 'qr') {
+  const text = prompt('Masukkan teks atau link untuk dibuat QR:');
+  if (!text) return;
+
+  // Hapus QR lama (kalau ada)
+  const existing = document.getElementById('qrBox');
+  if (existing) existing.remove();
+
+  // Buat kotak QR baru
+  const qrBox = document.createElement('div');
+  qrBox.id = 'qrBox';
+  qrBox.style.position = 'fixed';
+  qrBox.style.top = '50%';
+  qrBox.style.left = '50%';
+  qrBox.style.transform = 'translate(-50%, -50%)';
+  qrBox.style.background = '#000';
+  qrBox.style.padding = '20px';
+  qrBox.style.border = '2px solid #0f0';
+  qrBox.style.zIndex = '9999';
+  qrBox.style.borderRadius = '10px';
+  qrBox.style.textAlign = 'center';
+  qrBox.innerHTML = `
+    <div id="qrCanvas"></div>
+    <p style="color:#0f0;font-family:monospace;margin-top:10px;">${text}</p>
+    <button id="downloadQR" style="margin-top:8px;padding:6px 12px;">Download</button>
+    <button id="closeQR" style="margin-top:8px;padding:6px 12px;">Tutup</button>
+  `;
+  document.body.appendChild(qrBox);
+
+  // Generate QR
+  new QRCode(document.getElementById("qrCanvas"), {
+    text: text,
+    width: 180,
+    height: 180,
+    colorDark : "#0f0",
+    colorLight : "#000",
+    correctLevel : QRCode.CorrectLevel.H
+  });
+
+  // 🔹 Tombol Unduh (PNG)
+  document.getElementById('downloadQR').onclick = () => {
+    const canvas = qrBox.querySelector('canvas');
+    if (canvas) {
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = `tools_simulasi_QR_${text.slice(0,10)}.png`;
+      link.click();
+    } else {
+      alert('QR belum selesai digambar!');
+    }
+  };
+
+  // 🔹 Tombol Tutup
+  document.getElementById('closeQR').onclick = () => qrBox.remove();
+}
+  });
+});
+
+// copy & close & download actions
+copyBtn.addEventListener('click', async ()=>{
+  const ok = await copyToClipboard(base64Area.value);
+  if(ok) {
+    copyBtn.textContent = 'Copied ✓';
+    setTimeout(()=> copyBtn.textContent = 'Copy', 1200);
+  } else {
+    copyBtn.textContent = 'Copy failed';
+    setTimeout(()=> copyBtn.textContent = 'Copy', 1400);
+  }
+});
+closeBtn.addEventListener('click', hideBase64);
+downloadBtn.addEventListener('click', ()=>{
+  const text = base64Area.value || '';
+  const safeName = 'tools_simulasi_base64.txt';
+  downloadText(safeName, text);
+});
+
+// Download log
+
+/* Accessibility: Enter key shortcuts */
+['scanHost','hashInput','pwdInput','termInput'].forEach(id=>{
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter'){ e.preventDefault();
+      if(id === 'scanHost') document.getElementById('runScan').click();
+      if(id === 'hashInput') document.getElementById('genHash').click();
+      if(id === 'pwdInput') document.getElementById('chkPwd').click();
+      if(id === 'termInput') document.getElementById('termRun').click();
+    }
+  });
+});
+
+/* initial minor log */
+log('app-start');
+<!-- Library QRCodeJS -->
+/* Traffic Graph (Simulated) - JS
+   Paste this script after the HTML above (or into your main script block).
+*/
+(function(){
+  const canvas = document.getElementById('trafficCanvas');
+  const ctx = canvas.getContext('2d');
+  const tooltip = document.getElementById('tgTooltip');
+  const pauseBtn = document.getElementById('tgPauseBtn');
+  const resetBtn = document.getElementById('tgResetBtn');
+  const spikeBtn = document.getElementById('tgSpikeBtn');
+  const downloadBtn = document.getElementById('tgDownload');
+  const windowSel = document.getElementById('tgWindow');
+
+  // responsive canvas
+  function resizeCanvas(){
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.floor(canvas.clientWidth * dpr);
+    canvas.height = Math.floor(canvas.clientHeight * dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    draw(); // redraw on resize
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  // simulation data buffers
+  let windowSec = parseInt(windowSel.value,10) || 60;
+  const maxPoints = () => Math.max(30, windowSec); // at least 30 points
+  let labels = []; // timestamps
+  let downloadData = []; // KB/s
+  let uploadData = []; // KB/s
+
+  // simulation state
+  let running = true;
+  let intervalMs = 1000; // update every second
+  let simInterval = null;
+
+  // smoothing state
+  let lastDownload = 120; // KB/s initial
+  let lastUpload = 40;
+
+  // helper: time label
+  function timeLabel(ts){
+    const d = new Date(ts);
+    return d.toLocaleTimeString('en-GB'); // HH:MM:SS
+  }
+
+  // push new sample (KB/s)
+  function pushSample(sampleD, sampleU){
+    const now = Date.now();
+    labels.push(now);
+    downloadData.push(sampleD);
+    uploadData.push(sampleU);
+    // trim to window
+    while(labels.length > maxPoints()){
+      labels.shift();
+      downloadData.shift();
+      uploadData.shift();
+    }
+  }
+
+  // random walk generator with occasional spikes
+  function simulateStep({spike=false} = {}){
+    // base trend randomization
+    const targetD = 20 + Math.random()*200; // KB/s baseline random
+    const targetU = 5 + Math.random()*90;
+    // move towards target smoothly
+    lastDownload += (targetD - lastDownload) * 0.12;
+    lastUpload += (targetU - lastUpload) * 0.10;
+    // add random flicker
+    lastDownload += (Math.random() - 0.5) * 12;
+    lastUpload += (Math.random() - 0.5) * 6;
+    // optionally create spike
+    if(spike){
+      lastDownload += 1200 * (0.8 + Math.random()*0.8); // big spike KB/s
+      lastUpload += 200 * (0.6 + Math.random()*0.6);
+    }
+    // clamp
+    lastDownload = Math.max(0, Math.round(lastDownload));
+    lastUpload = Math.max(0, Math.round(lastUpload));
+    pushSample(lastDownload, lastUpload);
+  }
+
+  // drawing utilities
+  function clearArea(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+
+  function drawGrid(area){
+    const {x,y,w,h} = area;
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 1;
+    // horizontal grid lines (5)
+    const rows = 4;
+    for(let i=0;i<=rows;i++){
+      const yy = y + (h * i / rows);
+      ctx.beginPath(); ctx.moveTo(x, yy); ctx.lineTo(x+w, yy); ctx.stroke(); ctx.closePath();
+    }
+    ctx.restore();
+  }
+
+  function getMaxValue(){
+    // pick max auto-scale: highest value from both series * 1.2 margin
+    const maxD = downloadData.length ? Math.max(...downloadData) : 100;
+    const maxU = uploadData.length ? Math.max(...uploadData) : 50;
+    const raw = Math.max(maxD, maxU, 100);
+    // round up to nice step
+    const magnitude = Math.pow(10, Math.floor(Math.log10(raw)));
+    const nice = Math.ceil(raw / magnitude) * magnitude;
+    return Math.max(nice, 100);
+  }
+
+  function drawAxis(area, maxVal){
+    const {x,y,w,h} = area;
+    ctx.save();
+    ctx.fillStyle = 'rgba(200,230,255,0.06)';
+    ctx.font = '12px monospace';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    const rows = 4;
+    for(let i=0;i<=rows;i++){
+      const val = Math.round(maxVal * (rows - i) / rows);
+      const yy = y + (h * i / rows);
+      ctx.fillText(val + ' KB/s', x + w - 6, yy + 0.5);
+    }
+    ctx.restore();
+  }
+
+  function drawSeries(area, data, color, fillGradient){
+    const {x,y,w,h} = area;
+    if(data.length < 2) return;
+    const n = data.length;
+    ctx.save();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    for(let i=0;i<n;i++){
+      const px = x + (w * i / (maxPoints() - 1 || 1));
+      const py = y + h - (data[i] / fillGradient.maxVal) * h;
+      if(i===0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    // fill area
+    const grad = ctx.createLinearGradient(0, y, 0, y+h);
+    grad.addColorStop(0, fillGradient.top);
+    grad.addColorStop(1, fillGradient.bottom);
+    ctx.fillStyle = grad;
+    ctx.lineTo(x + w, y + h);
+    ctx.lineTo(x, y + h);
+    ctx.closePath();
+    ctx.globalAlpha = 0.12;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  function drawLegend(area){
+    const {x,y,w} = area;
+    ctx.save();
+    ctx.font = '12px monospace';
+    ctx.fillStyle = '#cfe9ff';
+    ctx.textAlign = 'left';
+    ctx.fillText('Download', x + 6, y + 12);
+    ctx.fillStyle = '#7cdfff';
+    ctx.fillRect(x + 6, y + 18, 28, 4);
+    ctx.fillStyle = '#cfe9ff';
+    ctx.fillText('Upload', x + 120, y + 12);
+    ctx.fillStyle = '#8affc2';
+    ctx.fillRect(x + 120, y + 18, 28, 4);
+    ctx.restore();
+  }
+
+  // main draw
+  function draw(){
+    if(!canvas.width || !canvas.height) return;
+    clearArea();
+    // compute plot area (padding)
+    const pad = 36;
+    const x = pad, y = 28;
+    const w = canvas.clientWidth - pad*2;
+    const h = canvas.clientHeight - 48;
+    const area = {x,y,w,h};
+
+    drawGrid(area);
+    const maxVal = getMaxValue();
+    // attach maxVal to gradient object for scaling
+    drawAxis(area, maxVal);
+
+    drawLegend(area);
+
+    // Draw series: need to pass maxVal as scaling
+    drawSeries(area, downloadData, '#7cdfff', {top:'rgba(124,223,255,0.28)', bottom:'rgba(2,20,40,0.0)', maxVal});
+    drawSeries(area, uploadData, '#8affc2', {top:'rgba(138,255,194,0.28)', bottom:'rgba(2,20,40,0.0)', maxVal});
+
+    // x-axis time labels: show first and last
+    ctx.save();
+    ctx.fillStyle = '#9fb0c9';
+    ctx.font = '11px monospace';
+    ctx.textAlign = 'left';
+    if(labels.length){
+      ctx.fillText(timeLabel(labels[0]), x, y + h + 18);
+      ctx.textAlign = 'right';
+      ctx.fillText(timeLabel(labels[labels.length-1]), x + w, y + h + 18);
+    }
+    ctx.restore();
+  }
+
+  // tooltip handling
+  function findNearestIndex(mouseX){
+    // convert mouseX to index
+    const rect = canvas.getBoundingClientRect();
+    const xClient = mouseX - rect.left;
+    const plotW = rect.width - 72; // account for padding approx
+    const relative = Math.max(0, Math.min(1, (xClient - 36) / plotW));
+    const idx = Math.round(relative * (maxPoints()-1));
+    // clamp to actual data length index range
+    const effectiveIdx = Math.max(0, Math.min(labels.length-1, Math.round((labels.length-1) * relative)));
+    return effectiveIdx;
+  }
+
+  canvas.addEventListener('mousemove', (ev)=>{
+    if(labels.length === 0) { tooltip.style.display='none'; return; }
+    const idx = findNearestIndex(ev.clientX);
+    if(idx < 0 || idx >= labels.length) { tooltip.style.display='none'; return; }
+    const t = labels[idx];
+    const d = downloadData[idx];
+    const u = uploadData[idx];
+    tooltip.style.display = 'block';
+    tooltip.innerHTML = `<strong>${timeLabel(t)}</strong><br>DL: ${d} KB/s<br>UL: ${u} KB/s`;
+    // position tooltip
+    const r = canvas.getBoundingClientRect();
+    let left = ev.clientX - r.left + 12;
+    let top = ev.clientY - r.top + 12;
+    // keep inside
+    if(left + tooltip.offsetWidth > r.width) left = r.width - tooltip.offsetWidth - 8;
+    if(top + tooltip.offsetHeight > r.height) top = r.height - tooltip.offsetHeight - 8;
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  });
+  canvas.addEventListener('mouseleave', ()=>{ tooltip.style.display='none'; });
+
+  // control wiring
+  pauseBtn.addEventListener('click', ()=>{
+    running = !running;
+    if(running){
+      pauseBtn.textContent = 'Pause';
+      startSim();
+    } else {
+      pauseBtn.textContent = 'Resume';
+      stopSim();
+    }
+  });
+  resetBtn.addEventListener('click', ()=>{
+    labels = []; downloadData = []; uploadData = [];
+    lastDownload = 120; lastUpload = 40;
+    draw();
+  });
+  spikeBtn.addEventListener('click', ()=>{ simulateStep({spike:true}); draw(); });
+
+  windowSel.addEventListener('change', ()=>{
+    windowSec = parseInt(windowSel.value,10);
+    // trim arrays if needed
+    while(labels.length > maxPoints()){
+      labels.shift(); downloadData.shift(); uploadData.shift();
+    }
+    draw();
+  });
+
+  downloadBtn.addEventListener('click', ()=>{
+    // render canvas to PNG and download
+    const link = document.createElement('a');
+    // create a snapshot of the canvas itself
+    const imgData = canvas.toDataURL('image/png');
+    link.href = imgData;
+    link.download = 'traffic_simulation.png';
+    link.click();
+  });
+
+  // simulation loop
+  function startSim(){
+    if(simInterval) clearInterval(simInterval);
+    simInterval = setInterval(()=>{
+      simulateStep();
+      draw();
+    }, intervalMs);
+  }
+  function stopSim(){
+    if(simInterval) { clearInterval(simInterval); simInterval = null; }
+  }
+
+  // seed initial data (smooth ramp)
+  (function seed(){
+    const seedCount = Math.min(40, maxPoints());
+    for(let i=0;i<seedCount;i++){
+      simulateStep();
+    }
+    draw();
+  })();
+
+  // start simulation
+  startSim();
+
+})();
+
+</script>
+</body>
+</html>
